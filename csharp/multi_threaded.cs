@@ -4,16 +4,6 @@ using System.Threading;
 
 class Program
 {
-    static void ConvertSingleThreaded()
-    {
-        Stopwatch stopwatch = Stopwatch.StartNew();
-
-        // Lógica de conversão de documentos aqui
-
-        stopwatch.Stop();
-        Console.WriteLine($"Tempo de execução (single-threaded): {stopwatch.Elapsed.TotalSeconds} segundos");
-    }
-
     static void ConvertMultiThreaded()
     {
         Stopwatch stopwatch = Stopwatch.StartNew();
@@ -23,7 +13,9 @@ class Program
         Thread[] threads = new Thread[numberOfThreads];
         for (int i = 0; i < numberOfThreads; i++)
         {
-            threads[i] = new Thread(ConvertSingleThreaded);
+            threads[i] = new Thread({
+                // !Lógica de conversão de documentos aqui
+            });
             threads[i].Start();
         }
 
@@ -39,6 +31,6 @@ class Program
 
     static void Main()
     {
-        ConvertSingleThreaded();
+        ConvertMultiThreaded();
     }
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"os"
 	"log"
 	"path/filepath"
 	"time"
@@ -9,13 +9,13 @@ import (
 
 func readAndWriteFile(inputPath, outputPath string) error {
 	// Ler o conteúdo do arquivo de entrada
-	content, err := ioutil.ReadFile(inputPath)
+	content, err := os.ReadFile(inputPath)
 	if err != nil {
 		return err
 	}
 
 	// Escrever o conteúdo no arquivo de saída
-	err = ioutil.WriteFile(outputPath, content, 0644)
+	err = os.WriteFile(outputPath, content, 0644)
 	if err != nil {
 		return err
 	}
@@ -23,7 +23,7 @@ func readAndWriteFile(inputPath, outputPath string) error {
 	return nil
 }
 
-func run() {
+func main() {
 	inputPath := filepath.Join("data", "sample.txt")
 	outputPath := filepath.Join("data", "outputGo.txt")
 

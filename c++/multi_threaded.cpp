@@ -1,17 +1,7 @@
 #include <iostream>
-#include <thread>
 #include <vector>
 #include <chrono>
-
-void convertSingleThreaded() {
-    auto startTime = std::chrono::high_resolution_clock::now();
-
-    // Lógica de conversão de documentos aqui
-
-    auto endTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> duration = endTime - startTime;
-    std::cout << "Tempo de execução (single-threaded): " << duration.count() << " segundos" << std::endl;
-}
+#include <thread>
 
 void convertMultiThreaded() {
     auto startTime = std::chrono::high_resolution_clock::now();
@@ -21,7 +11,7 @@ void convertMultiThreaded() {
     std::vector<std::thread> threads;
     for (int i = 0; i < numberOfThreads; ++i) {
         threads.emplace_back([]() {
-            // Lógica de conversão de documentos aqui
+            // !Lógica de conversão de documentos aqui
         });
     }
 
@@ -36,6 +26,6 @@ void convertMultiThreaded() {
 }
 
 int main() {
-    convertSingleThreaded();
+    convertMultiThreaded();
     return 0;
 }

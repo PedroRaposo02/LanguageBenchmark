@@ -1,9 +1,11 @@
-public class DocumentConverter {
+import java.util.concurrent.CountDownLatch;
+
+public class single_thread {
 
     public static void convertSingleThreaded() {
         long startTime = System.currentTimeMillis();
 
-        // Lógica de conversão de documentos aqui
+        //! Lógica de conversão de documentos aqui
 
         long endTime = System.currentTimeMillis();
         double executionTime = (endTime - startTime) / 1000.0; // em segundos
