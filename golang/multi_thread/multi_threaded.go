@@ -1,4 +1,4 @@
-package multi_thread
+package main
 
 import (
 	"fmt"
@@ -28,7 +28,7 @@ func convertMultiThreaded() {
 
 	endTime := time.Now()
 	elapsed := endTime.Sub(startTime)
-	fmt.Printf("Tempo de execução (multi-threaded): %s\n", elapsed)
+	fmt.Printf("Go Tempo de execução (multi-threaded): %s\n", elapsed)
 }
 
 func main() {

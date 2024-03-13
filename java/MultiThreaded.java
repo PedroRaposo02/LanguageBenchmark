@@ -1,6 +1,6 @@
 import java.util.concurrent.CountDownLatch;
 
-public class multi_thread {
+public class MultiThreaded {
 
     private static void convertMultiThreaded() {
         long startTime = System.currentTimeMillis();
@@ -27,7 +27,7 @@ public class multi_thread {
 
         long endTime = System.currentTimeMillis();
         double executionTime = (endTime - startTime) / 1000.0; // em segundos
-        System.out.println("Tempo de execução (multi-threaded): " + executionTime + " segundos");
+        System.out.println("Java Tempo de execução (multi-threaded): " + executionTime + " segundos");
     }
 
     public static void main(String[] args) {

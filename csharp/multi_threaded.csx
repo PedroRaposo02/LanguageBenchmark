@@ -2,9 +2,16 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 
-class Program
+class MultiTreaded
 {
-    static void ConvertMultiThreaded()
+    private static void Worker()
+    {
+        // Console.WriteLine("Thread " + Thread.CurrentThread.ManagedThreadId + " started");
+        // !Lógica de conversão de documentos aqui
+        // Console.WriteLine("Thread " + Thread.CurrentThread.ManagedThreadId + " finished");
+    }
+
+    public static void ConvertMultiThreaded()
     {
         Stopwatch stopwatch = Stopwatch.StartNew();
 
@@ -13,9 +20,7 @@ class Program
         Thread[] threads = new Thread[numberOfThreads];
         for (int i = 0; i < numberOfThreads; i++)
         {
-            threads[i] = new Thread({
-                // !Lógica de conversão de documentos aqui
-            });
+            threads[i] = new Thread(new ThreadStart(Worker));
             threads[i].Start();
         }
 
@@ -28,9 +33,11 @@ class Program
         stopwatch.Stop();
         Console.WriteLine($"Tempo de execução (multi-threaded): {stopwatch.Elapsed.TotalSeconds} segundos");
     }
-
-    static void Main()
-    {
-        ConvertMultiThreaded();
-    }
 }
+
+private static void Main()
+{
+    MultiTreaded.ConvertMultiThreaded();
+}
+
+Main();

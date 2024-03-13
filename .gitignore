@@ -1,0 +1,7 @@
+/data
+/.vscode
+
+**/*.exe
+**/*.class
+**/*.dll
+
