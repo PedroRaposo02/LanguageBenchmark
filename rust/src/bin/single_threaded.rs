@@ -14,6 +14,8 @@ fn read_write_file(input_path: &Path, output_path: &Path) -> io::Result<()> {
     println!("Writing file...");
     output_file.write_all(buffer.as_bytes())?;
 
+    println!("Done!");
+
     Ok(())
 }
 
@@ -23,9 +25,6 @@ fn main() -> io::Result<()> {
     println!("\n-----------------------------------\n\n");
 
     let args: Vec<String> = env::args().collect();
-
-    print!("Arguments: ");
-    println!("{:?}", args);
 
     let base_path = if args.len() > 1 { &args[1] } else { "../../../" };
 
@@ -37,12 +36,6 @@ fn main() -> io::Result<()> {
 
     let input_file_path = Path::new(base_path).join(input_file);
     let output_file_path = Path::new(base_path).join("data").join("outputRust.txt");
-
-    print!("Input file: ");
-    println!("{}", input_file_path.display());
-
-    print!("Output file: ");
-    println!("{}", output_file_path.display());
 
     read_write_file(&input_file_path, &output_file_path)?;
 

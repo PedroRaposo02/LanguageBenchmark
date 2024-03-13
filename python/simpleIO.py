@@ -1,13 +1,15 @@
 import time
 
+
 def read_and_write_file(input_path, output_path):
     # Ler o conteúdo do arquivo de texto
-    with open(input_path, 'r', encoding='utf-8') as file:
+    with open(input_path, "r", encoding="utf-8") as file:
         content = file.read()
-    
+
     # Escrever o conteúdo para um novo arquivo
-    with open(output_path, 'w', encoding='utf-8') as file:
+    with open(output_path, "w", encoding="utf-8") as file:
         file.write(content)
+
 
 if __name__ == "__main__":
     input_file = "data/biggerSample.txt"

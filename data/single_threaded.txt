@@ -1,0 +1,8 @@
+---------------- Single Thread ----------------
+| Linguagem         | Script                      | Input File        | Error Code   | Tempo de Execucao |
+| c++                 single_threaded.cpp           huge_file.txt       0              13.350414 segundos
+| python              single_threaded.py            huge_file.txt       0              27.749885 segundos
+| rust                single_threaded.rs            huge_file.txt       0              4.827984 segundos
+| java                SingleThreaded.java           huge_file.txt       0              7.282005 segundos
+| golang              single_threaded.go            huge_file.txt       0              6.003920 segundos
+| C#                  Program.cs                    large_file.txt      0              315.317928 segundos

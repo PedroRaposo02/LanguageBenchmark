@@ -32,7 +32,8 @@ void readAndWriteFile(const std::string &inputPath, const std::string &outputPat
 int main(int argc, char *argv[])
 {
     std::cout << "\n\n-----------------------------------\n";
-    std::cout << "\nC++ Single Threaded Script\n";
+    std::cout << "C++ Single Threaded Script\n";
+    std::cout << "-----------------------------------\n";
 
     std::string base_path = (argc > 1) ? argv[1] : "../";
     std::string input_file = (argc > 2) ? argv[2] : "biggerSample.txt";

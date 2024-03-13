@@ -1,5 +1,6 @@
-/data
-/.vscode
+/data/*output*
+/data/*file*
+**/.vscode
 
 **/*.exe
 **/*.class
