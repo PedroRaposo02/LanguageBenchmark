@@ -1,8 +1,0 @@
----------------- Multi Thread ----------------
-Linguagem  Script               Tempo de Execucao segundos
-| c++                 multi_threaded.cpp            large_file.txt      0              0.075146 segundos
-| csharp              multi_threaded.csx            large_file.txt      0              0.619369 segundos
-| golang              multi_threaded.go             large_file.txt      0              0.088643 segundos
-| java                MultiThreaded.java            large_file.txt      0              0.228504 segundos
-| python              multi_threaded.py             large_file.txt      0              0.069763 segundos
-| rust                multi_threaded.rs             large_file.txt      0              0.187516 segundos

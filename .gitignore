@@ -1,8 +1,10 @@
 /data/*output*
 /data/*file*
 **/.vscode
-
+/__pycache__/
+/.venv/
 **/*.exe
 **/*.class
 **/*.dll
+*.sln
 

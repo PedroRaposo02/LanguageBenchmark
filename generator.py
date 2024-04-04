@@ -3,6 +3,9 @@ import os
 
 
 def write_to_file(file_path, data, num_lines):
+    # Check if file already exists
+    if os.path.isfile(file_path):
+        return
     with open(file_path, "w") as file:
         for _ in range(num_lines):
             file.write(data + "\n")
@@ -18,6 +21,16 @@ if __name__ == "__main__":
     data_dict = "./data"
 
     dict = [
+        {
+            "file_path": "ginormus_file.txt",
+            "data": lorem.paragraph(),
+            "num_lines": 100000000,
+        },
+        {
+            "file_path": "humongous_file.txt",
+            "data": lorem.paragraph(),
+            "num_lines": 50000000,
+        },
         {
             "file_path": "huge_file.txt",
             "data": lorem.paragraph(),

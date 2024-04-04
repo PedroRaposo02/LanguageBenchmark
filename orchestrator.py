@@ -1,9 +1,39 @@
 import subprocess
 import time
+import re
 import os
+from sorter import *
 
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def main():
+
+    output_file = "data/results.txt"
+
+    file_dict = [
+        os.path.join("data", "small_file.txt"),
+        os.path.join("data", "medium_file.txt"),
+        os.path.join("data", "large_file.txt"),
+        os.path.join("data", "huge_file.txt"),
+        # os.path.join("data", "humongous_file.txt"),
+        # os.path.join("data", "ginormus_file.txt"),
+    ]
+
+    file_dict.reverse()
+
+    write_header(output_file)
+
+    for file in file_dict:
+        # continue
+        # Single-Threaded Scripts
+        executeSingleThreadedScripts(file, output_file)
+
+    filename = "data/results.txt"
+    sorted_path = "data/sorted_results.txt"
+    sorted_data = read_and_sort_data(filename)
+    write_sorted_data(sorted_path, sorted_data)
 
 
 def execute_script(
@@ -13,15 +43,44 @@ def execute_script(
     run_command=None,
     output_file=None,
     input_file=None,
+    capture_output=True,
 ):
+    def print_line(
+        script_name, input_file_name, err, execution_time, reading_time, writing_time
+    ):
+        os.chdir(ROOT_DIR)
+        if output_file:
+            with open(output_file, "a") as file:
+                file.write(
+                    "{language:<20}{script_name:<30}{input_file_name:<20}{err_code:<15}{execution_time:<25}{reading_time:<25}{writing_time:<25}\n".format(
+                        language=f"| {language}",
+                        script_name=f"| {script_name}",
+                        input_file_name=f"| {input_file_name}",
+                        err_code=f"| {err_code}",
+                        execution_time=f"| {execution_time:.3f}",
+                        reading_time=f"| {reading_time:.3f}",
+                        writing_time=f"| {writing_time:.3f}",
+                    )
+                )
+
     try:
+        os.chdir(ROOT_DIR)
+
         base_path, script_name = os.path.split(script_path)
         # strip file extension
         stripped_name = script_name.split(".")[0]
 
+        input_file = (
+            input_file if input_file else os.path.join("data", "large_file.txt")
+        )
+
+        input_file_name = os.path.basename(input_file)
+
         os.chdir(base_path)
 
         print(f"Executing {script_name}...")
+
+        err_code = "0"
 
         if compile_command:
             # Compile the script if a compilation command is provided
@@ -34,7 +93,11 @@ def execute_script(
                     return
             except subprocess.CalledProcessError as e:
                 print(f"Erro ao compilar o script {script_name} em {language}: {e}")
-                return
+                err_code = 1
+
+        if err_code != "0":
+            print_line(script_name, input_file_name, err_code, 0, 0, 0)
+            return
 
         command = (
             f"{run_command} {ROOT_DIR}"
@@ -44,19 +107,40 @@ def execute_script(
         if input_file:
             command = f"{command} {input_file}"
 
-        err_code = "0"
+        reading_time = 0
+        writing_time = 0
         try:
             print(f"Running command: {command}")
             print(f"Current working directory: {os.getcwd()}")
+
+            print("\n-----------------------------------")
+            print(f"{language} Timed Script")
+            print("-----------------------------------\n")
+
             start_time = time.time()
             result = subprocess.run(
-                command, check=True, text=True
+                command, check=True, text=True, capture_output=capture_output
             )
             end_time = time.time()
+
+            # Capture the output and extract reading and writing times
+            stdout_str = result.stdout
+            stderr_str = result.stderr
+            output = stdout_str if stdout_str else stderr_str
+            if capture_output:
+                reading_time = float(output.split("Reading time: ")[1].split("ms")[0])
+                writing_time = float(output.split("Writing time: ")[1].split("ms")[0])
+
+            print(f"Reading time: {reading_time} milliseconds")
+            print(f"Writing time: {writing_time} milliseconds")
 
             err_code = result.returncode
         except subprocess.CalledProcessError as e:
             print(f"Erro ao executar o script {script_name} em {language}: {e}")
+            err_code = 1
+
+        if err_code != 0:
+            print_line(script_name, input_file_name, err_code, 0, 0, 0)
             return
 
         execution_time = end_time - start_time
@@ -65,170 +149,128 @@ def execute_script(
         )
         os.chdir(ROOT_DIR)
 
-        input_file = (
-            input_file if input_file else os.path.join("data", "large_file.txt")
+        print_line(
+            script_name,
+            input_file_name,
+            err_code,
+            execution_time,
+            reading_time,
+            writing_time,
         )
 
-        input_file_name = os.path.basename(input_file)
-
-        if output_file:
-            with open(output_file, "a") as file:
-                file.write(
-                    f"| {language:<20}{script_name:<30}{input_file_name:<20}{err_code:<15}{execution_time:.6f} segundos\n"
-                )
-
     except Exception as e:
-        print(f"Erro ao executar o script {script_name} em {language}: {e}")
+        print(f"Erro no script {script_name} em {language}: {e}")
+        print_line(script_name, input_file_name, 1, 0, 0, 0)
 
     os.chdir(ROOT_DIR)
 
 
-def main():
-    # Single-Threaded Scripts
-    print("Executing Single-Threaded Scripts:")
-    single_threaded_txt_path = "./data/single_threaded.txt"
-    with open(single_threaded_txt_path, "w") as file:
-        file.write("---------------- Single Thread ----------------\n".ljust(31))
+def write_header(output_path):
+    with open(output_path, "w") as file:
         file.write(
-            "{language:<20}{script_name:<30}{input_file:<20}{err_code:<15}{execution_time}\n".format(
+            "{language:<20}{script_name:<30}{input_file:<20}{err_code:<15}{execution_time:<25}{reading_time:<25}{writing_time:<25}\n".format(
                 language="| Linguagem",
                 script_name="| Script",
                 input_file="| Input File",
                 err_code="| Error Code",
-                execution_time="| Tempo de Execucao |",
+                execution_time="| Tempo de Execucao (s)",
+                reading_time="| Tempo de Leitura (ms)",
+                writing_time="| Tempo de Escrita (ms)",
             )
         )
 
+
+def executeSingleThreadedScripts(
+    input_file="data/huge_file.txt", output_file="data/results.txt"
+):
+    print("Executing Timed Scripts:")
+
     execute_script(
-        "c++/single_threaded.cpp",
-        "c++",
-        "g++ single_threaded.cpp -o single_threaded",
+        "javascript/timedIO.js",
+        "Javascript",
         "",
-        "./data/single_threaded.txt",
-        os.path.join("data", "huge_file.txt"),
+        "node timedIO.js",
+        output_file,
+        input_file,
     )
     execute_script(
-        "python/single_threaded.py",
-        "python",
+        "c++/timedIO.cpp",
+        "C++",
+        "g++ timedIO.cpp -o timedIO",
         "",
-        "python single_threaded.py",
-        "./data/single_threaded.txt",
-        os.path.join("data", "huge_file.txt"),
+        output_file,
+        input_file,
     )
     execute_script(
-        "rust/src/bin/single_threaded.rs",
-        "rust",
+        "golang/timedIO/timedIO.go",
+        "Golang",
+        "go build timedIO.go",
+        "./timedIO",
+        output_file,
+        input_file,
+    )
+    execute_script(
+        "rust/src/bin/timed_io.rs",
+        "Rust",
         "cargo build",
-        "cargo run --bin single_threaded --",
-        "./data/single_threaded.txt",
-        os.path.join("data", "huge_file.txt"),
+        "cargo run --bin timed_io --",
+        output_file,
+        input_file,
     )
     execute_script(
-        "java/SingleThreaded.java",
-        "java",
-        "javac SingleThreaded.java",
-        "java SingleThreaded",
-        "./data/single_threaded.txt",
-        os.path.join("data", "huge_file.txt"),
+        "python/timedIO.py",
+        "Python",
+        "",
+        "python timedIO.py",
+        output_file,
+        input_file,
     )
     execute_script(
-        "golang/single_thread/single_threaded.go",
-        "golang",
-        "go build single_threaded.go",
-        "./single_threaded",
-        "./data/single_threaded.txt",
-        os.path.join(ROOT_DIR, "data", "huge_file.txt"),
+        "java/TimedIO.java",
+        "Java",
+        "javac TimedIO.java",
+        "java TimedIO",
+        output_file,
+        input_file,
     )
     execute_script(
-        "csharp/SingleThread/Program.cs",
+        "csharp/TimedIO/Program.cs",
         "C#",
         "dotnet build",
         "dotnet run --",
-        "./data/single_threaded.txt",
-        os.path.join("data", "large_file.txt"),
+        output_file,
+        input_file,
     )
 
-    # Multi-Threaded Scripts
-    print("Executing Multi-Threaded Scripts:")
-    multi_threaded_txt_path = "./data/multi_threaded.txt"
-    with open(multi_threaded_txt_path, "w") as file:
-        file.write("---------------- Multi Thread ----------------\n".ljust(31))
-        file.write(
-            "{language:<10} {script_name:<20} {execution_time} segundos\n".format(
-                language="Linguagem",
-                script_name="Script",
-                execution_time="Tempo de Execucao",
-            )
-        )
-
-    execute_script(
-        "c++/multi_threaded.cpp",
-        "c++",
-        "g++ multi_threaded.cpp -o multi_threaded -pthread",
-        "",
-        "./data/multi_threaded.txt",
-    )
-    execute_script(
-        "csharp/multi_threaded.csx",
-        "csharp",
-        "",
-        "dotnet script multi_threaded.csx",
-        "./data/multi_threaded.txt",
-    )
-    execute_script(
-        "golang/multi_thread/multi_threaded.go",
-        "golang",
-        "go build multi_threaded.go",
-        "./multi_threaded",
-        "./data/multi_threaded.txt",
-    )
-    execute_script(
-        "java/MultiThreaded.java",
-        "java",
-        "javac MultiThreaded.java",
-        "java MultiThreaded",
-        "./data/multi_threaded.txt",
-    )
-    execute_script(
-        "python/multi_threaded.py",
-        "python",
-        "",
-        "python multi_threaded.py",
-        "./data/multi_threaded.txt",
-    )
-    execute_script(
-        "rust/src/bin/multi_threaded.rs",
-        "rust",
-        "cargo build",
-        "cargo run --bin multi_threaded",
-        "./data/multi_threaded.txt",
-    )
+    # ----------------------------------------------------------------
 
 
-def executeSingleScript():
+def executeSingleScript(
+    input_file="data/huge_file.txt", output_file="data/results.txt"
+):
     # Single-Threaded Scripts
     print("Executing Single-Threaded Scripts:")
     single_threaded_txt_path = "./data/single_threaded.txt"
     with open(single_threaded_txt_path, "w") as file:
-        file.write("---------------- Single Thread ----------------\n".ljust(31))
         file.write(
-            "{language:<20}{script_name:<30}{input_file:<20}{err_code:<15}{execution_time}\n".format(
+            "{language:<20}{script_name:<30}{input_file:<20}{err_code:<15}{execution_time:<25}{reading_time:<25}{writing_time:<25}\n".format(
                 language="| Linguagem",
                 script_name="| Script",
                 input_file="| Input File",
                 err_code="| Error Code",
-                execution_time="| Tempo de Execucao |",
+                execution_time="| Tempo de Execucao (s)",
+                reading_time="| Tempo de Leitura (ms)",
+                writing_time="| Tempo de Escrita (ms)",
             )
         )
     execute_script(
-        "csharp/SingleThread/Program.cs",
-        "C#",
-        "dotnet build",
-        "dotnet run --",
-        "./data/single_threaded.txt",
-        os.path.join("data", "large_file.txt"),
+        "golang/timedIO/timedIO.go",
+        "Golang",
+        "go build timedIO.go",
+        "./timedIO",
+        output_file,
+        input_file,
     )
-
 
 if __name__ == "__main__":
     # executeSingleScript()
